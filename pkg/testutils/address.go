@@ -47,9 +47,10 @@ func GetLocalAddress(t *testing.T) string {
 	return "localhost"
 }
 
-func NewAddresses(t *testing.T, n int) []string {
+func NewAddresses(t *testing.T, n int) ([]net.TCPAddr, []string) {
 	localAddress := GetLocalAddress(t)
-	addresses := make([]string, 0, n)
+	addresses := make([]net.TCPAddr, 0, n)
+	addressStrings := make([]string, 0, n)
 
 	for i := 0; i < n; i++ {
 		a, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:", localAddress))
@@ -58,15 +59,18 @@ func NewAddresses(t *testing.T, n int) []string {
 		l, err := net.ListenTCP("tcp", a)
 		require.NoError(t, err, "should be able to allocate port")
 
-		str := l.Addr().(*net.TCPAddr).String()
+		addr, ok := l.Addr().(*net.TCPAddr)
+		require.True(t, ok, "should be a TCPAddr")
+		require.NotNil(t, addr, "TCPAddr should not be nil")
+
 		// Make sure that we have not already seen this address.
-		require.NotContains(t, addresses, str, "address must be unique")
+		require.NotContains(t, addresses, addr.String(), "address must be unique")
+		addressStrings = append(addressStrings, addr.String())
+		addresses = append(addresses, *addr)
 
-		// Store the address.
-		addresses = append(addresses, str)
-
-		l.Close()
+		err = l.Close()
+		require.NoError(t, err, "allocation should close successfully")
 	}
 
-	return addresses
+	return addresses, addressStrings
 }

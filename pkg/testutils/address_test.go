@@ -39,14 +39,16 @@ func TestNewAddresses(t *testing.T) {
 	t.Run("small", func(t *testing.T) {
 		size := 3
 
-		addresses := NewAddresses(t, size)
+		addresses, strings := NewAddresses(t, size)
 		assert.Len(t, addresses, size, "number of addresses does not match expected")
+		assert.Len(t, strings, size, "number of strings does not match expected")
 	})
 
 	t.Run("big", func(t *testing.T) {
 		size := 16
 
-		addresses := NewAddresses(t, size)
+		addresses, strings := NewAddresses(t, size)
 		assert.Len(t, addresses, size, "number of addresses does not match expected")
+		assert.Len(t, strings, size, "number of strings does not match expected")
 	})
 }

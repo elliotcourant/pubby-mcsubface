@@ -29,15 +29,16 @@ func TestNewNode(t *testing.T) {
 		log := testutils.NewLog(t)
 		size := 3
 
-		addresses := testutils.NewAddresses(t, size)
+		addresses, addressStrings := testutils.NewAddresses(t, size)
 
 		nodes := make([]*Node, size)
 
 		for i := 0; i < size; i++ {
 			config := Config{
-				Peers: addresses,
-				Log:   log,
-				// TODO (elliotcourant) Add listen address and port.
+				Peers:         addressStrings,
+				Log:           log,
+				ListenAddress: addresses[i].IP.String(),
+				ListenPort:    addresses[i].Port,
 			}
 
 			node, err := NewNode(&config)
