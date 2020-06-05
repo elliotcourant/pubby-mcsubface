@@ -58,8 +58,12 @@ func NewNode(config *Config) (*Node, error) {
 
 	// If there were any peers specified in the config then try to join those peers within the cluster.
 	if len(config.Peers) > 0 {
-		if _, err = cluster.Join(config.Peers); err != nil {
+		if n, err := cluster.Join(config.Peers); err != nil {
 			return nil, errors.Wrap(err, "failed to join cluster")
+		} else if n == 0 {
+			return nil, errors.New("could not connect to any peers")
+		} else {
+			config.Log.Debugf("joined %d peers", n)
 		}
 	}
 
