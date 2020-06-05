@@ -20,6 +20,9 @@ type (
 
 		// Log for logging things.
 		Log *logrus.Entry
+
+		ListenAddress string
+		ListenPort    int
 	}
 
 	// Node represents a single worker in a cluster. This is used to address others in the cluster and coordinate with
@@ -45,6 +48,8 @@ func NewNode(config *Config) (*Node, error) {
 	// We just need to change a few of the parameters, but we can use the default config provided for the most part.
 	memberlistConfig := memberlist.DefaultLANConfig()
 	memberlistConfig.Name = config.Name
+	memberlistConfig.BindAddr = config.ListenAddress
+	memberlistConfig.BindPort = config.ListenPort
 
 	cluster, err := memberlist.Create(memberlistConfig)
 	if err != nil {
