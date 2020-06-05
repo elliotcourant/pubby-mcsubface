@@ -2,6 +2,7 @@ package node
 
 import (
 	"testing"
+	"time"
 
 	"github.com/elliotcourant/pubby-mcsubface/pkg/testutils"
 	"github.com/stretchr/testify/assert"
@@ -47,5 +48,13 @@ func TestNewNode(t *testing.T) {
 			nodes[i] = node
 		}
 
+		// Let the cluster run for a few seconds.
+		time.Sleep(3 * time.Second)
+
+		// Kill all the nodes in the cluster.
+		for _, node := range nodes {
+			err := node.Close()
+			assert.NoError(t, err, "node should have closed successfully")
+		}
 	})
 }
