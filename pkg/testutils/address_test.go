@@ -1,6 +1,7 @@
 package testutils
 
 import (
+	"fmt"
 	"net"
 	"testing"
 
@@ -37,6 +38,7 @@ func TestGetLocalAddress(t *testing.T) {
 
 func TestNewAddresses(t *testing.T) {
 	t.Run("small", func(t *testing.T) {
+		fmt.Println(t.Name())
 		size := 3
 
 		addresses, strings := NewAddresses(t, size)
@@ -45,6 +47,7 @@ func TestNewAddresses(t *testing.T) {
 	})
 
 	t.Run("big", func(t *testing.T) {
+		fmt.Println(t.Name())
 		size := 16
 
 		addresses, strings := NewAddresses(t, size)

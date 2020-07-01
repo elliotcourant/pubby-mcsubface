@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+option go_package = "protos";
+
+package protos;
+
+service Raft {
+    rpc AppendEntries (AppendEntriesRequest) returns (AppendEntriesResponse);
+    rpc RequestVote (RequestVoteRequest) returns (RequestVoteResponse);
+    rpc InstallSnapshot (InstallSnapshotRequest) returns (InstallSnapshotResponse);
+    rpc TimeoutNow (TimeoutNowRequest) returns (TimeoutNowResponse);
+}
+
+enum ProtocolVersion {
+    ProtocolVersionMin = 0;
+    ProtocolVersionMax = 3;
+}
+
+enum SnapshotVersion {
+    SnapshotVersionMin = 0;
+    SnapshotVersionMax = 1;
+}
+
+enum LogType {
+    LogCommand = 0;
+    LogNoop = 1;
+    LogAddPeerDeprecated = 2;
+    LogRemovePeerDeprecated = 3;
+    LogBarrier = 4;
+    LogConfiguration = 5;
+}
+
+message RPCHeader {
+    ProtocolVersion ProtocolVersion = 1;
+}
+
+message Log {
+    uint64 Index = 1;
+    uint64 Term = 2;
+    LogType LogType = 3;
+    bytes Data = 4;
+    bytes Extensions = 5;
+}
+
+message AppendEntriesRequest {
+    RPCHeader RPCHeader = 1;
+    uint64 Term = 2;
+    bytes Leader = 3;
+    uint64 PreviousLogEntry = 4;
+    uint64 PreviousLogTerm = 5;
+    repeated Log Entries = 6;
+    uint64 LeaderCommitIndex = 7;
+}
+
+message AppendEntriesResponse {
+    RPCHeader RPCHeader = 1;
+    uint64 Term = 2;
+    uint64 LastLog = 3;
+    bool Success = 4;
+    bool NoRetryBackoff = 5;
+}
+
+message RequestVoteRequest {
+    RPCHeader RPCHeader = 1;
+    uint64 Term = 2;
+    bytes Candidate = 3;
+    uint64 LastLogIndex = 4;
+    uint64 LastLogTerm = 5;
+    bool LeadershipTransfer = 6;
+}
+
+message RequestVoteResponse {
+    RPCHeader RPCHeader = 1;
+    uint64 Term = 2;
+    bytes Peers = 3;
+    bool Granted = 4;
+}
+
+message InstallSnapshotRequest {
+    RPCHeader RPCHeader = 1;
+    SnapshotVersion SnapshotVersion = 2;
+    uint64 Term = 3;
+    bytes Leader = 4;
+    uint64 LastLogIndex = 5;
+    uint64 LastLogTerm = 6;
+    bytes Peers = 7;
+    bytes Configuration = 8;
+    uint64 ConfigurationIndex = 9;
+    bytes Data = 10;
+}
+
+message InstallSnapshotResponse {
+    RPCHeader RPCHeader = 1;
+    uint64 Term = 2;
+    bool Success = 3;
+}
+
+message TimeoutNowRequest {
+    RPCHeader RPCHeader = 1;
+}
+
+message TimeoutNowResponse {
+    RPCHeader RPCHeader = 1;
+}
