@@ -1,5 +1,6 @@
 package protos
 
+//go:generate protoc -I ./ ./raft.proto --go_out=plugins=grpc:.
 import (
 	"github.com/hashicorp/raft"
 )
