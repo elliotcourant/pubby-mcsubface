@@ -10,15 +10,8 @@ var (
 )
 
 type Server struct {
-	node *Node
-}
-
-func newServer(node *Node) *Server {
-	server := &Server{
-		node: node,
-	}
-	node.server = server
-	return server
+	node      *Node
+	transport *Transport
 }
 
 func (s *Server) AppendEntries(ctx context.Context, request *protos.AppendEntriesRequest) (*protos.AppendEntriesResponse, error) {
